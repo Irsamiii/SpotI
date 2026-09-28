@@ -1,5 +1,32 @@
-node_modules
-# Keep environment variables out of version control
-.env
 
-/generated/prisma
+
+# See https://help.github.com/articles/ignoring-files/ for more details
+
+# Dependencies
+/node_modules
+**/node_modules
+
+# Next.js build output
+/.next
+/out
+
+# Environment variables
+.env
+.env*.local
+
+# Editor & AI Assistant directories
+.agents/
+.claude/
+.windsurf/
+.cursor/
+.devin/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
