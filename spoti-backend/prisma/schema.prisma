@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────
+// Enums
+// ─────────────────────────────
+
+enum NoiseLevel {
+  SILENT
+  LOW
+  MODERATE
+  LOUD
+}
+
+enum WifiQuality {
+  POOR
+  OKAY
+  GOOD
+  EXCELLENT
+}
+
+enum OutletAvailability {
+  NONE
+  FEW
+  PLENTY
+}
+
+enum CrowdingLevel {
+  OPEN
+  FILLING
+  FULL
+}
+
+enum CheckInStatus {
+  ARRIVED
+  LEFT
+}
+
+// ─────────────────────────────
+// Core models
+// ─────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  preferences   Json?
+
+  ratings       Rating[]
+  photos        Photo[]
+  favorites     Favorite[]
+  checkIns      CheckIn[]
+}
+
+model Spot {
+  id          String   @id @default(cuid())
+  name        String
+  building    String
+  floor       String?
+  latitude    Float
+  longitude   Float
+  hours       String?
+  capacity    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ratings     Rating[]
+  photos      Photo[]
+  favorites   Favorite[]
+  checkIns    CheckIn[]
+
+  @@index([latitude, longitude])
+  @@index([building])
+}
+
+model Rating {
+  id                 String             @id @default(cuid())
+  spotId             String
+  userId             String
+  noiseLevel         NoiseLevel
+  wifiQuality        WifiQuality
+  outletAvailability OutletAvailability
+  crowdingAtTime     CrowdingLevel
+  comment            String?
+  createdAt          DateTime           @default(now())
+
+  spot Spot @relation(fields: [spotId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([spotId])
+  @@index([spotId, userId, createdAt])
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  spotId    String
+  userId    String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  spot Spot @relation(fields: [spotId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([spotId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  spotId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  spot Spot @relation(fields: [spotId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, spotId])
+}
+
+model CheckIn {
+  id        String        @id @default(cuid())
+  spotId    String
+  userId    String
+  status    CheckInStatus
+  createdAt DateTime      @default(now())
+
+  spot Spot @relation(fields: [spotId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([spotId, createdAt])
+}
