@@ -15,5 +15,5 @@ export const spotQuerySchema = z.object({
   lat: z.coerce.number().optional(),
   lng: z.coerce.number().optional(),
   radiusKm: z.coerce.number().positive().max(50).default(5),
-  minNoiseQuiet: z.coerce.boolean().optional(),
+  preset: z.enum(["deepFocus", "groupStudy", "quickSession","videoCall"]).optional(),
 });
