@@ -1,18 +1,7 @@
-import {
-  S3Client,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
+import { mkdir, writeFile } from "fs/promises";
+import path from "path";
 import { randomUUID } from "crypto";
 
-const s3 = new S3Client({
-  region: process.env.S3_REGION!,
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-  },
-});
-
-const BUCKET = process.env.S3_BUCKET!;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
@@ -26,16 +15,12 @@ export async function uploadPhoto(file: File, spotId: string) {
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const ext = file.type.split("/")[1];
-  const key = `spots/${spotId}/${randomUUID()}.${ext}`;
+  const fileName = `${randomUUID()}.${ext}`;
 
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: BUCKET,
-      Key: key,
-      Body: buffer,
-      ContentType: file.type,
-    })
-  );
+  const dir = path.join(process.cwd(), "public", "uploads", "spots", spotId);
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, fileName), buffer);
 
-  return `https://${BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/${key}`;
+  // Served by Next.js from /public, e.g. http://localhost:3000/uploads/spots/<id>/<file>
+  return `/uploads/spots/${spotId}/${fileName}`;
 }
