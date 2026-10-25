@@ -5,12 +5,30 @@ import {
   Star,
   UserRound,
 } from "lucide-react";
+import Link from "next/link";
+
 
 const navigationItems = [
-  { label: "Discover", icon: Home, active: true },
-  { label: "Saved spots", icon: Bookmark, active: false },
-  { label: "My reviews", icon: Star, active: false },
+  {
+    label: "Discover",
+    icon: Home,
+    active: true,
+    href: "/discover",
+  },
+  {
+    label: "Saved spots",
+    icon: Bookmark,
+    active: false,
+    href: "/favorites",
+  },
+  {
+    label: "My reviews",
+    icon: Star,
+    active: false,
+    href: "/profile",
+  },
 ];
+
 
 export function Sidebar() {
   return (
@@ -28,14 +46,15 @@ export function Sidebar() {
             const Icon = item.icon;
 
             return (
-              <a
-                className={`sidebar-link ${item.active ? "active" : ""}`}
-                href="#"
-                key={item.label}
+              <Link
+              className={`sidebar-link ${item.active ? "active" : ""}`}
+              href={item.href}
+              key={item.label}
               >
+
                 <Icon size={17} strokeWidth={1.8} />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             );
           })}
         </nav>
@@ -45,15 +64,16 @@ export function Sidebar() {
         <p className="sidebar-label">Account</p>
 
         <nav className="sidebar-nav" aria-label="Account navigation">
-          <a className="sidebar-link" href="#">
-            <UserRound size={17} strokeWidth={1.8} />
-            <span>Profile</span>
-          </a>
+          <Link className="sidebar-link" href="/profile">
+  <UserRound size={17} strokeWidth={1.8} />
+  <span>Profile</span>
+</Link>
 
-          <a className="sidebar-link" href="#">
-            <Settings size={17} strokeWidth={1.8} />
-            <span>Settings</span>
-          </a>
+<Link className="sidebar-link" href="/profile">
+  <Settings size={17} strokeWidth={1.8} />
+  <span>Settings</span>
+</Link>
+
         </nav>
       </div>
 
