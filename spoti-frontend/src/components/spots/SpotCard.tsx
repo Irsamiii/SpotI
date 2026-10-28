@@ -5,75 +5,85 @@ import {
   Wifi,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
+
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import type { Spot, TaskType } from "@/types/spot";
 
 type SpotCardProps = {
-  name: string;
-  location: string;
-  match: string;
-  imageLabel: string;
-  crowding: string;
-  crowdingClass: "open" | "filling" | "full";
-  rating: string;
+  spot: Spot;
+  selectedTask: TaskType;
 };
 
 export function SpotCard({
-  name,
-  location,
-  match,
-  imageLabel,
-  crowding,
-  crowdingClass,
-  rating,
+  spot,
+  selectedTask,
 }: SpotCardProps) {
   return (
     <article className="spot-card">
       <div className="spot-image">
-        <span className="spot-image-label">{imageLabel}</span>
+        <span className="spot-image-label">
+          {spot.imageLabel}
+        </span>
       </div>
 
       <div className="spot-details">
         <div className="spot-topline">
           <div>
-            <h3 className="spot-name">{name}</h3>
-            <p className="spot-location">{location}</p>
+            <Link
+              className="spot-card-link"
+              href={`/spots/${spot.id}`}
+            >
+              <h3 className="spot-name">
+                {spot.name}
+              </h3>
+
+              <p className="spot-location">
+                {spot.location}
+              </p>
+            </Link>
           </div>
 
           <button
             className="favorite-button"
-            aria-label={`Save ${name}`}
+            aria-label={`Save ${spot.name}`}
             type="button"
           >
             <Heart size={17} strokeWidth={1.8} />
           </button>
         </div>
 
-        <p className="spot-match">{match}</p>
+        <p className="spot-match">
+          {spot.matches[selectedTask]}
+        </p>
 
         <div className="spot-attributes">
           <span className="attribute">
             <Volume2 size={13} />
-            Quiet
+            {spot.attributes[0]}
           </span>
 
           <span className="attribute">
             <Wifi size={13} />
-            Strong Wi-Fi
+            {spot.attributes[1]}
           </span>
 
           <span className="attribute">
             <Zap size={13} />
-            Outlets
+            {spot.attributes[2]}
           </span>
 
           <span className="attribute">
             <Star size={13} />
-            {rating}
+            {spot.rating}
           </span>
         </div>
 
-        <div className="crowding">
-          <span className={`status-dot ${crowdingClass}`} />
-          {crowding}
+        <div className="spot-status-row">
+          <StatusBadge
+            status={spot.crowdingClass}
+            label={spot.crowding}
+          />
         </div>
       </div>
     </article>
