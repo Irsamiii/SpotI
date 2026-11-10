@@ -1,10 +1,10 @@
+import { Suspense } from "react";
 import {
   ArrowLeft,
   Clock3,
   ExternalLink,
   Heart,
   MapPin,
-  MessageCircle,
   Navigation,
   PlugZap,
   Star,
@@ -14,8 +14,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { ReviewModal } from "@/components/spots/ReviewModal";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { spots } from "@/data/spots";
+
+export function generateStaticParams() {
+  return spots.map((spot) => ({
+    id: spot.id,
+  }));
+}
 
 type SpotDetailsPageProps = {
   params: Promise<{
@@ -40,11 +47,12 @@ const reviews = [
   },
 ];
 
-export default async function SpotDetailsPage({
+async function SpotDetailsContent({
   params,
 }: SpotDetailsPageProps) {
   const { id } = await params;
   const spot = spots.find((item) => item.id === id);
+
 
   if (!spot) {
     return (
@@ -135,10 +143,8 @@ export default async function SpotDetailsPage({
                 Get directions
               </button>
 
-              <button className="ui-button ui-button-secondary" type="button">
-                <MessageCircle size={15} />
-                Rate this spot
-              </button>
+              <ReviewModal spotName={spot.name} />
+
             </div>
           </div>
         </section>
@@ -294,3 +300,25 @@ export default async function SpotDetailsPage({
     </main>
   );
 }
+
+export default function SpotDetailsPage({
+  params,
+}: SpotDetailsPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <main className="simple-page">
+          <div className="simple-page-container">
+            <section className="empty-state">
+              <h2>Loading study spot...</h2>
+              <p>Preparing the spot details for you.</p>
+            </section>
+          </div>
+        </main>
+      }
+    >
+      <SpotDetailsContent params={params} />
+    </Suspense>
+  );
+}
+
