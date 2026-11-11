@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowRight,
   Bookmark,
@@ -10,26 +12,16 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const savedSpots = [
-  {
-    name: "Main Library — 3rd Floor",
-    location: "Central Library · 3rd Floor",
-    description: "A quiet space with reliable outlets and strong Wi-Fi.",
-    status: "Open now",
-    statusClass: "open",
-    rating: "4.8",
-  },
-  {
-    name: "Garden Study Lounge",
-    location: "Arts Building · Ground Floor",
-    description: "Natural light, comfortable seating, and a calm atmosphere.",
-    status: "Open now",
-    statusClass: "open",
-    rating: "4.5",
-  },
-];
+import { useFavorites } from "@/components/layout/FavoritesProvider";
+import { spots } from "@/data/spots";
 
 export default function FavoritesPage() {
+  const { favoriteIds, toggleFavorite } = useFavorites();
+
+  const savedSpots = spots.filter((spot) =>
+    favoriteIds.includes(spot.id),
+  );
+
   return (
     <main className="simple-page">
       <div className="simple-page-container">
@@ -42,7 +34,10 @@ export default function FavoritesPage() {
             </p>
           </div>
 
-          <Link className="ui-button ui-button-secondary" href="/discover">
+          <Link
+            className="ui-button ui-button-secondary"
+            href="/discover"
+          >
             Discover spots
             <ArrowRight size={15} />
           </Link>
@@ -51,7 +46,10 @@ export default function FavoritesPage() {
         {savedSpots.length > 0 ? (
           <section className="saved-spots-grid">
             {savedSpots.map((spot) => (
-              <article className="saved-spot-card" key={spot.name}>
+              <article
+                className="saved-spot-card"
+                key={spot.id}
+              >
                 <div className="saved-spot-image">
                   <Bookmark size={24} />
                 </div>
@@ -59,41 +57,54 @@ export default function FavoritesPage() {
                 <div className="saved-spot-content">
                   <div className="saved-spot-heading">
                     <div>
-                      <p className="spot-name">{spot.name}</p>
+                      <Link
+                        className="spot-card-link"
+                        href={`/spots/${spot.id}`}
+                      >
+                        <p className="spot-name">
+                          {spot.name}
+                        </p>
 
-                      <p className="spot-location">
-                        <MapPin size={12} />
-                        {spot.location}
-                      </p>
+                        <p className="spot-location">
+                          <MapPin size={12} />
+                          {spot.location}
+                        </p>
+                      </Link>
                     </div>
 
                     <button
                       className="favorite-button saved-heart"
                       aria-label={`Remove ${spot.name} from saved spots`}
+                      aria-pressed="true"
+                      onClick={() => toggleFavorite(spot.id)}
                       type="button"
                     >
-                      <Heart size={17} fill="currentColor" />
+                      <Heart
+                        size={17}
+                        fill="currentColor"
+                      />
                     </button>
                   </div>
 
                   <p className="saved-spot-description">
-                    {spot.description}
+                    A student-recommended study space with useful
+                    facilities for your next session.
                   </p>
 
                   <div className="spot-attributes saved-spot-attributes">
                     <span className="attribute">
                       <Volume2 size={13} />
-                      Quiet
+                      {spot.attributes[0]}
                     </span>
 
                     <span className="attribute">
                       <Wifi size={13} />
-                      Strong Wi-Fi
+                      {spot.attributes[1]}
                     </span>
 
                     <span className="attribute">
                       <Zap size={13} />
-                      Outlets
+                      {spot.attributes[2]}
                     </span>
 
                     <span className="attribute">
@@ -103,15 +114,20 @@ export default function FavoritesPage() {
                   </div>
 
                   <div className="saved-spot-footer">
-                    <span className={`saved-status ${spot.statusClass}`}>
+                    <span
+                      className={`saved-status ${spot.crowdingClass}`}
+                    >
                       <span className="status-dot" />
-                      {spot.status}
+                      {spot.crowding}
                     </span>
 
-                    <button className="text-button" type="button">
+                    <Link
+                      className="text-button"
+                      href={`/spots/${spot.id}`}
+                    >
                       View details
                       <ArrowRight size={14} />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </article>
@@ -126,10 +142,14 @@ export default function FavoritesPage() {
             <h2>No saved spots yet</h2>
 
             <p>
-              Save a study spot from the Discover page and it will appear here.
+              Save a study spot from the Discover page and it will
+              appear here.
             </p>
 
-            <Link className="ui-button ui-button-primary" href="/discover">
+            <Link
+              className="ui-button ui-button-primary"
+              href="/discover"
+            >
               Find a study spot
             </Link>
           </section>

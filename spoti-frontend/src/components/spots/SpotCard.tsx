@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Heart,
   Star,
@@ -7,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { useFavorites } from "@/components/layout/FavoritesProvider";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import type { Spot, TaskType } from "@/types/spot";
 
@@ -19,6 +22,9 @@ export function SpotCard({
   spot,
   selectedTask,
 }: SpotCardProps) {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const saved = isFavorite(spot.id);
+
   return (
     <article className="spot-card">
       <div className="spot-image">
@@ -34,9 +40,7 @@ export function SpotCard({
               className="spot-card-link"
               href={`/spots/${spot.id}`}
             >
-              <h3 className="spot-name">
-                {spot.name}
-              </h3>
+              <h3 className="spot-name">{spot.name}</h3>
 
               <p className="spot-location">
                 {spot.location}
@@ -45,11 +49,23 @@ export function SpotCard({
           </div>
 
           <button
-            className="favorite-button"
-            aria-label={`Save ${spot.name}`}
+            className={`favorite-button ${
+              saved ? "saved" : ""
+            }`}
+            aria-label={
+              saved
+                ? `Remove ${spot.name} from saved spots`
+                : `Save ${spot.name}`
+            }
+            aria-pressed={saved}
+            onClick={() => toggleFavorite(spot.id)}
             type="button"
           >
-            <Heart size={17} strokeWidth={1.8} />
+            <Heart
+              size={17}
+              fill={saved ? "currentColor" : "none"}
+              strokeWidth={1.8}
+            />
           </button>
         </div>
 

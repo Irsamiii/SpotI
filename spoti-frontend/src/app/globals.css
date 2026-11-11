@@ -397,6 +397,15 @@ a {
   font-size: 11px;
 }
 
+.spot-card-link {
+  display: block;
+}
+
+.spot-card-link:hover .spot-name {
+  color: var(--primary);
+}
+
+
 .favorite-button {
   display: flex;
   height: 28px;
@@ -407,6 +416,15 @@ a {
   background: transparent;
   color: var(--text-light);
 }
+
+.favorite-button.saved {
+  color: var(--danger);
+}
+
+.favorite-button.saved:hover {
+  color: #a44942;
+}
+
 
 .favorite-button:hover {
   color: var(--danger);
